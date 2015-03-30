@@ -12,7 +12,8 @@ import com.obd.utils.QuickShPref;
 
 
 public class GetLoaction {
-	String mIMEI = "33333333333";
+	public String mIMEI = "33333333333";
+	int mGSMsingle;
 	DBmanager mDBmanager;
 	
 	public GetLoaction(){
@@ -29,11 +30,11 @@ public class GetLoaction {
 				Log.d("tag", "定位数据有误,不上报:"+time);
 			return null;
 		}
-		Gps gps = PositionUtil.bd09_To_Gps84(location.getLatitude(), location.getLongitude());
+//		Gps gps = PositionUtil.bd09_To_Gps84(location.getLatitude(), location.getLongitude());
 		
-		double lon = gps.mLon;//location.getLongitude(); // 经度
-		double lat =	gps.mLat; // 纬度
-
+		double lon = location.getLongitude(); //gps.mLon;//location.getLongitude(); // 经度
+		double lat =	location.getLatitude();//gps.mLat; // 纬度
+		int SatelliteNumber = location.getSatelliteNumber();
 		/**
 		 * location.getLocType() 的值 61 ： GPS定位结果 62 ： 扫描整合定位依据失败。此时定位结果无效。 63 ：
 		 * 网络异常，没有成功向服务器发起请求。此时定位结果无效。 65 ： 定位缓存的结果。 161： 表示网络定位结果 162~167：
@@ -73,27 +74,50 @@ public class GetLoaction {
 		String direction = String.format("%02d", derect);
 
 		StringBuffer buffer = new StringBuffer();
-		buffer.append("*HQ200" + mIMEI + ",BA&A"); // imei号登录就上传imei号
+		buffer.append("*MG200" + mIMEI + ",BA&A"); // imei号登录就上传imei号
 
 		buffer.append(time.subSequence(11, 13));
 		buffer.append(time.subSequence(14, 16));
 		buffer.append(time.subSequence(17, 19));
 		buffer.append(latString);
 		buffer.append(lonString);
-		buffer.append((char) f);
+		buffer.append((char) 0x6f);
 		buffer.append(speed);
 		buffer.append(direction);
 		buffer.append(time.subSequence(8, 10));
 		buffer.append(time.subSequence(5, 7));
 		buffer.append(time.subSequence(2, 4));
-
-
+		if(SatelliteNumber<0)
+			SatelliteNumber = 0;
+		buffer.append(",&O"+SatelliteNumber);
+		buffer.append(",&N"+mGSMsingle);
+		buffer.append(",&Q0x050x030x0C0x010x12");
+		//buffer.append("&S1,0,,20150318101758");
+		//buffer.append("&S2,20150318111758,11356.1966E,2233.1303N,13300,6100,5,6,7,1200,900,5");
 		buffer.append('#');
 		
 		mDBmanager.insert(buffer.toString());
 		return buffer.toString();
 	}
 	
+	public String genHead(){
+		return "*MG200" + mIMEI + ",BA%s#";
+	}
+	public void setGSMsingle(int single){
+		mGSMsingle = single;
+	}
+	public void  uploadGSMsingle(int single){
+		String sig = String.format(genHead(), "&N"+single);
+		mDBmanager.insert(sig);
+	}
+	public void  uploadBattery(int bat){
+		String sig = String.format(genHead(), "&M"+800);
+		mDBmanager.insert(sig);
+	}
+	public void  uploadGPSnum(int num){
+		String sig = String.format(genHead(), "&O"+num);
+		mDBmanager.insert(sig);
+	}
 	/*
 	 * 将百度定位的时间转换成标准格式2013-09-01 09:05:02
 	 */

@@ -1,6 +1,9 @@
 package com.obd.utils;
 
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -16,7 +19,10 @@ public class DBmanager {
             + Environment.getDataDirectory().getAbsolutePath() + "/"+ PACKAGE_NAME;
     public static final String DATABASE_TABLE = "data";
     private static final String DATABASE_CREATE ="CREATE TABLE IF NOT EXISTS data( _id integer primary key autoincrement,content TEXT,note TEXT,remark TEXT)";
+    public static final String DATABACKUP_TABLE = "backup";
+    private static final String DATABACKUP_CREATE ="CREATE TABLE IF NOT EXISTS backup( _id integer primary key autoincrement,content TEXT,note TEXT,remark TEXT)";
 	private String COLUM_CONTENT = "content";
+	private String COLUM_REMARK = "remark";
 	private String COLUM_ID = "_id"; 
 	
     private SQLiteDatabase database;
@@ -39,6 +45,7 @@ public class DBmanager {
     public void openDatabase() {
     	database = mContext.openOrCreateDatabase(DB_NAME, Context.MODE_PRIVATE, null);
     	database.execSQL(DATABASE_CREATE);
+    	database.execSQL(DATABACKUP_CREATE);
     }
     
     public void insert(String content){
@@ -47,7 +54,18 @@ public class DBmanager {
     	database.insert(DATABASE_TABLE, null, values);
     	MyLog.D("insert " + content);
     }
-    
+    public void insertBackup(String content){
+    	ContentValues values = new ContentValues();
+    	values.put(COLUM_CONTENT, content);
+    	values.put(COLUM_REMARK, getTime());
+    	database.insert(DATABACKUP_TABLE, null, values);
+    	MyLog.I("backup insert " + content);
+    }
+    public String getTime(){
+	    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
+	    String t=format.format(new Date());
+	    return t;
+    }
     public DbItem getLastContent(){
     	DbItem item = null;
         String[] columns = new String[]{COLUM_ID,COLUM_CONTENT};

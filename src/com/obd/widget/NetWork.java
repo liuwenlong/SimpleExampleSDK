@@ -10,8 +10,8 @@ import com.obd.utils.MyLog;
 import com.obd.utils.DBmanager.DbItem;
 
 public class NetWork {
-	private final String Server_ip = "118.26.162.95";
-	private final int Server_port = 9000;
+	private final String Server_ip = "183.62.138.9";
+	private final int Server_port = 2233;
 	
 	private Socket mSocket;
 	private InputStream mSocketReader;
@@ -115,7 +115,7 @@ public class NetWork {
 
 			mSocketReader = mSocket.getInputStream();
 			mSocketWriter = mSocket.getOutputStream();	
-			MyLog.D("---------------->socket连接成功");
+			MyLog.D("socket连接成功");
 		} catch (Exception e) {
 			MyLog.D("创建Socket连接失败");
 			closeNet();

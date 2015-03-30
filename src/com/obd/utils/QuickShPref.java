@@ -18,7 +18,11 @@ public static String DisplayName= "DisplayName";
 
 public static String Msg_sound= "Msg_sound";
 public static String Msg_Vibrate= "Msg_Vibrate";
-	
+
+public static String IsStartOn = "IsStartOn";
+public static String LAT = "lat";
+public static String LON = "lon";
+
 private static SharedPreferences sSharedPreferences;
 private static Editor sEditor;
 	
@@ -34,6 +38,8 @@ private static Editor sEditor;
 			sEditor.putInt(key, (Integer)obj);
 		}else if(obj instanceof Boolean){
 			sEditor.putBoolean(key, (Boolean)obj);
+		}else if(obj instanceof Float){
+			sEditor.putFloat(key, (Float)obj);
 		}else{
 			return;
 		}
@@ -48,5 +54,8 @@ private static Editor sEditor;
 	}
 	public static boolean getBoolean(String key){
 		return sSharedPreferences.getBoolean(key, false);
+	}	
+	public static Float getFloat(String key){
+		return sSharedPreferences.getFloat(key, 0);
 	}	
 }

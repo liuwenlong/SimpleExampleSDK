@@ -8,7 +8,6 @@ import android.view.Menu;
 
 import com.comobd.zyobd.api.OBDAPI;
 import com.obd.observer.BObserver;
-import com.obd.observer.RPSObserver;
 import com.obd.service.DataSyncService;
 import com.umeng.analytics.MobclickAgent;
 

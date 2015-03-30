@@ -1,5 +1,6 @@
 package com.obd.app;
 
+import com.obd.simpleexample.StatusInface;
 import com.obd.utils.DBmanager;
 import com.obd.utils.QuickShPref;
 
