@@ -25,6 +25,7 @@ public class DROInfo {
 	public String BRAKES;
 	public String MINRPM;
 	public String MILES;
+	public String note;
 	public void setMILES(String arg){
 		MILES = arg;
 	}	

@@ -22,6 +22,7 @@ public static String Msg_Vibrate= "Msg_Vibrate";
 public static String IsStartOn = "IsStartOn";
 public static String LAT = "lat";
 public static String LON = "lon";
+public static String Time = "time";
 
 private static SharedPreferences sSharedPreferences;
 private static Editor sEditor;

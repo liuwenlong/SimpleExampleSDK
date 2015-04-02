@@ -32,6 +32,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
@@ -97,6 +98,7 @@ public class DataSyncService extends Service{
 	
     LocationClient mLocClient;
     MyLocationListenner myListener= new MyLocationListenner();
+    Handler mHandler = new Handler();
     // 定位初始化
     private void locationInit(){
 		mLocClient = new LocationClient(this);
@@ -106,7 +108,16 @@ public class DataSyncService extends Service{
 		option.setCoorType("bd09ll"); // 设置坐标类型
 		option.setScanSpan(30*1000);
 		mLocClient.setLocOption(option);
-		mLocClient.start(); 
+		
+		mHandler.postDelayed(new Runnable() {
+			
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				mLocClient.start(); 
+			}
+		}, 0*1000);
+		
 		Log.d(TAG,"百度定位 初始化成功");
     }
 	public class MyLocationListenner implements BDLocationListener {
@@ -122,8 +133,9 @@ public class DataSyncService extends Service{
 	}
 	
 	public void saveLastPos(BDLocation location){
-		QuickShPref.putValueObject(QuickShPref.LAT, location.getLatitude());
-		QuickShPref.putValueObject(QuickShPref.LON, location.getLongitude());
+		QuickShPref.putValueObject(QuickShPref.LAT, (float)(location.getLatitude()));
+		QuickShPref.putValueObject(QuickShPref.LON, (float)(location.getLongitude()));
+		StatusInface.getInstance().getTime();
 		MyLog.D("百度定位地址保存成功");
 	}
 	public static void openADB(){
@@ -206,12 +218,13 @@ public class DataSyncService extends Service{
       }
 	}
 	
-	public void onEventMainThread(String ret) {
-		StatusInface.getInstance().vehicleResult(ret);
+	public void onEventMainThread(String result) {
+		MyLog.D("onEventMainThread String ret="+result);
+		//StatusInface.getInstance().vehicleResult(result);
 	}
 	public void onEventMainThread(JsonMsg msg) {
 		switch (msg.what) {
-		case 0:
+		case 2:
 			StatusInface.getInstance().DROinface(msg.obj);
 			break;
 		case 1:
@@ -221,6 +234,13 @@ public class DataSyncService extends Service{
 			break;
 		}
 		
+	}
+	
+	public static void postEvent(int what,JSONObject json){
+		JsonMsg msg = new JsonMsg();
+		msg.what = what;
+		msg.obj = json;
+		EventBus.getDefault().post(msg);
 	}
 	
 }

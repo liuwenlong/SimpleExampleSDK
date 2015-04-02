@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.comobd.zyobd.observer.DRONObserver;
 import com.comobd.zyobd.port.Subject;
+import com.obd.service.DataSyncService;
 import com.obd.simpleexample.StatusInface;
 
 import de.greenrobot.event.EventBus;
@@ -28,7 +29,7 @@ public class DRObserver extends DRONObserver{
 		// TODO Auto-generated method stub
 		super.update(jsonString);
 		//StatusInface.getInstance().postRSO(jsonString);
-		EventBus.getDefault().post(jsonString);
+		DataSyncService.postEvent(2, jsonString);
 		Log.e(TAG, jsonString.toString());
 	}
 

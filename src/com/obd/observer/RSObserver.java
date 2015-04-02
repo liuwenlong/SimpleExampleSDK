@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.comobd.zyobd.observer.RPMSPDObserver;
 import com.comobd.zyobd.port.Subject;
+import com.obd.service.DataSyncService;
 
 import de.greenrobot.event.EventBus;
 
@@ -27,7 +28,7 @@ public class RSObserver extends RPMSPDObserver {
 	public void update(JSONObject jsonString) {
 		// TODO Auto-generated method stub
 		super.update(jsonString);
-
+		DataSyncService.postEvent(1, jsonString);
 		Log.e(TAG, jsonString.toString());
 	}
 

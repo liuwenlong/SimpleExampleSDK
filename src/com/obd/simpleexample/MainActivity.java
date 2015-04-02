@@ -1,14 +1,18 @@
 package com.obd.simpleexample;
 
+import java.io.IOException;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 
 import com.comobd.zyobd.api.OBDAPI;
 import com.obd.observer.BObserver;
 import com.obd.service.DataSyncService;
+import com.obd.utils.MyLog;
 import com.umeng.analytics.MobclickAgent;
 
 public class MainActivity extends Activity {
@@ -19,7 +23,7 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 
 		startService(new Intent(this, DataSyncService.class));
-		Log.d("TAG", "MainActivity onCreate");
+		MyLog.E("MainActivity onCreate");
 	}
 
 	@Override
@@ -40,8 +44,26 @@ public class MainActivity extends Activity {
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
+		mHandler.postDelayed(mSyncRunnable, 3000);
 //		MobclickAgent.onResume(this);
 	}
+	
+	Handler mHandler = new Handler();
+	
+	Runnable mSyncRunnable = new Runnable(){
 
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			try {
+				Runtime.getRuntime().exec("sync");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			MyLog.E("sync 执行成功");			
+		}
+		
+	};
 	
 }

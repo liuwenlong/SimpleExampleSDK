@@ -23,6 +23,7 @@ public class DBmanager {
     private static final String DATABACKUP_CREATE ="CREATE TABLE IF NOT EXISTS backup( _id integer primary key autoincrement,content TEXT,note TEXT,remark TEXT)";
 	private String COLUM_CONTENT = "content";
 	private String COLUM_REMARK = "remark";
+	private String COLUM_NOTE = "note";
 	private String COLUM_ID = "_id"; 
 	
     private SQLiteDatabase database;
@@ -58,6 +59,15 @@ public class DBmanager {
     	ContentValues values = new ContentValues();
     	values.put(COLUM_CONTENT, content);
     	values.put(COLUM_REMARK, getTime());
+    	database.insert(DATABACKUP_TABLE, null, values);
+    	MyLog.I("backup insert " + content);
+    }
+    public void insertBackupNote(String content,String note){
+    	ContentValues values = new ContentValues();
+    	values.put(COLUM_CONTENT, content);
+    	values.put(COLUM_NOTE, note);
+    	values.put(COLUM_REMARK, getTime());
+    	
     	database.insert(DATABACKUP_TABLE, null, values);
     	MyLog.I("backup insert " + content);
     }
