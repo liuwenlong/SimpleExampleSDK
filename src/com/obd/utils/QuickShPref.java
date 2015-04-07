@@ -23,7 +23,7 @@ public static String IsStartOn = "IsStartOn";
 public static String LAT = "lat";
 public static String LON = "lon";
 public static String Time = "time";
-
+public static String TimeGPS = "TimeGPS";
 private static SharedPreferences sSharedPreferences;
 private static Editor sEditor;
 	

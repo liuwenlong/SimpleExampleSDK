@@ -20,9 +20,9 @@ public class StatusVehicle implements StatusVehicleListener{
 		// TODO Auto-generated method stub
 		Log.e(TAG, result);
 		//StatusInface.getInstance().postVehicle(result);
-		//EventBus.getDefault().post(result);
-		MyLog.E("callBack result="+result);
-		StatusInface.getInstance().vehicleResult(result);
+		EventBus.getDefault().post(result);
+		//MyLog.E("callBack result="+result);
+		//StatusInface.getInstance().vehicleResult(result);
 		return result;
 	}
 

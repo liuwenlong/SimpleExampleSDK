@@ -36,9 +36,7 @@ public class StatusInface {
 	}
 	
 	public void vehicleResult(String result){
-		MyLog.E("vehicleResult result="+result);
 		if(START.equalsIgnoreCase(result)){
-			MyLog.E("onStart true");
 			onStart(true);
 		}else if(STOP.equalsIgnoreCase(result)){
 			
@@ -107,13 +105,10 @@ public class StatusInface {
     	return ret;
     }
     public void doOnstart(){
-    	MyLog.E("doOnstart enter");	
 		String content = String.format("%s&S1,0,,%s#", getShortHead(),getTime());
-		MyLog.E("doOnstart insert " + content);	
 		startS1 = content;
-		MyLog.E("doOnstart insert complete");
-		DBmanager.getInase().insert(content);
-		DBmanager.getInase().insertBackup(content); 
+//		DBmanager.getInase().insert(content);
+//		DBmanager.getInase().insertBackup(content); 
 		isStartOn = true;
 		QuickShPref.putValueObject(QuickShPref.IsStartOn, isStartOn);
     }
@@ -128,12 +123,12 @@ public class StatusInface {
     	if(!isStartOn){
     		MyLog.W("警告：收到熄火消息时 isStartOn="+isStartOn);
     	}
-    	
-    	String content = String.format("%s&S2,%s,%sE,%sN,%d,%d,5,%s,%s,%s,%s,0#", getShortHead(),getTime(),
-    			FloatToString(QuickShPref.getFloat(QuickShPref.LON)),FloatToString(QuickShPref.getFloat(QuickShPref.LAT)),
-    			info.getMILESM(),info.getFuleSmL(),info.RACLS,info.BRAKES,info.STARTS,info.STARTS);
-		DBmanager.getInase().insert(content);
-		DBmanager.getInase().insertBackupNote(content, info.note);
+    	mDROInfo = info;
+//    	String content = String.format("%s&S2,%s,%sE,%sN,%d,%d,5,%s,%s,%s,%s,0#", getShortHead(),getTime(),
+//    			FloatToString(QuickShPref.getFloat(QuickShPref.LON)),FloatToString(QuickShPref.getFloat(QuickShPref.LAT)),
+//    			info.getMILESM(),info.getFuleSmL(),info.RACLS,info.BRAKES,info.STARTS,info.STARTS);
+//		DBmanager.getInase().insert(content);
+//		DBmanager.getInase().insertBackupNote(content, info.note);
 		isStartOn = false;
 		QuickShPref.putValueObject(QuickShPref.IsStartOn, isStartOn);
 		mSpd = "00";

@@ -4,5 +4,5 @@
     <string name="app_name">SimpleExample</string>
     <string name="menu_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
-
+<string name="stop">{"MAF":"0\r\n","AVGSPD":"029","STARTS":"068","MILE-T":"0003.6","MAXRPM":"11642","POWER":"0","RACLS":"000","FUELS":"0037.241","FUEL-T":"000.605","MAXACL":"008","TIMES":"0007.7","MAXSPD":"030","BRAKES":"000","MINRPM":"00000","MILES":"005558.7"}</string>
 </resources>

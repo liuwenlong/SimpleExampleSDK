@@ -1,6 +1,8 @@
 package com.obd.widget;
 
 import java.nio.Buffer;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,7 +18,7 @@ import com.obd.utils.QuickShPref;
 
 
 public class GetLoaction {
-	public static final boolean isDebug = false;
+	public static final boolean isDebug = true;
 	
 	public String mIMEI = "33333333333";
 	int mGSMsingle;
@@ -41,9 +43,15 @@ public class GetLoaction {
 		double lon = location.getLongitude();
 		double lat =	location.getLatitude();//gps.mLat; // 纬度
 		
+		// 如果经纬度为0，则不上报
+		if (lon == 0 || lat == 0) {
+			return null;
+		}
+		
 		if(isDebug){
 			Random random = new Random();
-			lon = lon+0.001f*random.nextInt(10);
+			lon = lon+0.0001f*random.nextInt(100);
+			lat = lat+0.0001f*random.nextInt(100);
 		}
 		
 		int SatelliteNumber = location.getSatelliteNumber();
@@ -59,10 +67,7 @@ public class GetLoaction {
 			f = 0x0F; // 基站 15
 		}
 
-			// 如果经纬度为0，则不上报
-			if (lon == 0 || lat == 0) {
-				return null;
-			}
+
 
 
 		int lonDu = (int) lon;
@@ -106,20 +111,23 @@ public class GetLoaction {
 		buffer.append("&B0000000000");
 
 		GetLoactionHead = buffer.toString();
-//		buffer.append("&O"+SatelliteNumber);
-//		buffer.append("&N"+mGSMsingle);
-		
-//		buffer.append(",&Q0x050x030x0C0x010x12");
-//		if(StatusInface.getInstance().getStartS1() != null){
-//			buffer.append("&S1,0,,"+StatusInface.getInstance().getTime());		 
-//		}else{
-//			MyLog.D("getStartS1 = null");
-//		}
-//		DROInfo mDROInfo = StatusInface.getInstance().getDROInfo();
-//		if(mDROInfo!=null){
-//			buffer.append(String.format("&S2,%s,%sE,%sN,%d,%d,5,%s,%s,%s,%s,0", StatusInface.getInstance().getTime(),
-//					lonString,latString,mDROInfo.getMILESM(),mDROInfo.getFuleSmL(),mDROInfo.RACLS,mDROInfo.BRAKES,mDROInfo.STARTS,mDROInfo.STARTS));
-//		}
+
+		if(StatusInface.getInstance().getStartS1() != null){
+			buffer.append("&S1,0,,"+StatusInface.getInstance().getTime());
+			DBmanager.getInase().insertBackup(buffer.toString()); 
+		}else{
+			DROInfo mDROInfo = StatusInface.getInstance().getDROInfo();
+			if(mDROInfo != null){
+				buffer.append(String.format("&S2,%s,%sE,%sN,%d,%d,5,%s,%s,%s,%s,0", StatusInface.getInstance().getTime(),
+						lonString,latString,mDROInfo.getMILESM(),mDROInfo.getFuleSmL(),
+						mDROInfo.RACLS,mDROInfo.BRAKES,mDROInfo.STARTS,mDROInfo.STARTS));
+				DBmanager.getInase().insertBackupNote(buffer.toString(),mDROInfo.note); 
+			}else{
+				buffer.append("&O"+SatelliteNumber);
+				buffer.append("&N"+mGSMsingle);				
+			}
+		}
+
 		//buffer.append("&S2,20150318111758,11356.1966E,2233.1303N,13300,6100,5,6,7,1200,900,5");
 		buffer.append('#');
 		
@@ -167,8 +175,7 @@ public class GetLoaction {
 						return null;					
 					
 					if(isDebug){
-						Random random = new Random();
-						s = random.nextInt(60);
+						return getTime();
 					}
 				} catch (Exception e) {
 					// TODO: handle exception
@@ -179,4 +186,16 @@ public class GetLoaction {
 			}
 			return ret;
 	}
+    public String getTime(){
+    	Date date = new Date();
+    	
+    	if(date.getYear()<114){
+    		return null;
+    	}
+    	
+    	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	    String t=format.format(new Date());
+
+	    return t;
+    }
 }

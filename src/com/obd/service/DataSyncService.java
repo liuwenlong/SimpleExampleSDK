@@ -220,7 +220,7 @@ public class DataSyncService extends Service{
 	
 	public void onEventMainThread(String result) {
 		MyLog.D("onEventMainThread String ret="+result);
-		//StatusInface.getInstance().vehicleResult(result);
+		StatusInface.getInstance().vehicleResult(result);
 	}
 	public void onEventMainThread(JsonMsg msg) {
 		switch (msg.what) {
