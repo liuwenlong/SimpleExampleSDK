@@ -19,7 +19,7 @@ import com.obd.utils.QuickShPref;
 
 
 public class GetLoaction {
-	public static final boolean isDebug = true;
+	public static final boolean isDebug = false;
 	
 	public String mIMEI = "33333333333";
 	int mGSMsingle;
