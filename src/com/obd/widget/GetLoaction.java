@@ -1,5 +1,6 @@
 package com.obd.widget;
 
+import java.io.IOException;
 import java.nio.Buffer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -75,11 +76,15 @@ public class GetLoaction {
 		int lonFenInt = (int) lonFen;
 		String lonString = String.format("%03d%02d%04d", lonDu, lonFenInt,
 				(int) ((lonFen - lonFenInt) * 10000));
-
+		String lonStartString = String.format("%03d%02d.%04d", lonDu, lonFenInt,
+				(int) ((lonFen - lonFenInt) * 10000));
+		
 		int latDu = (int) lat;
 		float latFen = (float) (lat - latDu) * 60;
 		int latFenInt = (int) latFen;
 		String latString = String.format("%02d%02d%04d", latDu, latFenInt,
+				(int) ((latFen - latFenInt) * 10000));
+		String latStartString = String.format("%02d%02d.%04d", latDu, latFenInt,
 				(int) ((latFen - latFenInt) * 10000));
 
 		String speed = String.format("%02d",
@@ -115,13 +120,30 @@ public class GetLoaction {
 		if(StatusInface.getInstance().getStartS1() != null){
 			buffer.append("&S1,0,,"+StatusInface.getInstance().getTime());
 			DBmanager.getInase().insertBackup(buffer.toString()); 
+			QuickShPref.putValueObject(QuickShPref.StartTme, StatusInface.getInstance().getTime());
+			QuickShPref.putValueObject(QuickShPref.StartLat, latStartString);
+			QuickShPref.putValueObject(QuickShPref.StartLon, lonStartString);
+			try {
+				Runtime.getRuntime().exec("sync");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}			
 		}else{
 			DROInfo mDROInfo = StatusInface.getInstance().getDROInfo();
 			if(mDROInfo != null){
-				buffer.append(String.format("&S2,%s,%sE,%sN,%d,%d,5,%s,%s,%s,%s,0", StatusInface.getInstance().getTime(),
-						lonString,latString,mDROInfo.getMILESM(),mDROInfo.getFuleSmL(),
-						mDROInfo.RACLS,mDROInfo.BRAKES,mDROInfo.STARTS,mDROInfo.STARTS));
-				DBmanager.getInase().insertBackupNote(buffer.toString(),mDROInfo.note); 
+				String startLon = QuickShPref.getString(QuickShPref.StartLon);
+				String startLat = QuickShPref.getString(QuickShPref.StartLat);
+				String startTime = QuickShPref.getString(QuickShPref.StartTme);
+				
+				if(startTime != null || startLat != null || startLon != null){
+					buffer.append(String.format("&S2,%s,%sE,%sN,%d,%d,5,%s,%s,%s,%s,0", startTime,
+							startLon,startLat,mDROInfo.getMILESM(),mDROInfo.getFuleSmL(),
+							mDROInfo.RACLS,mDROInfo.BRAKES,mDROInfo.STARTS,mDROInfo.STARTS));
+					DBmanager.getInase().insertBackupNote(buffer.toString(),mDROInfo.note); 
+				}else{
+					MyLog.E("startTime="+startTime+",startLat="+startLat+",startLon="+startLon);
+				}
 			}else{
 				buffer.append("&O"+SatelliteNumber);
 				buffer.append("&N"+mGSMsingle);				

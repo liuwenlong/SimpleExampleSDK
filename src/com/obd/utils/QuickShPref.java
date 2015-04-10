@@ -24,8 +24,16 @@ public static String LAT = "lat";
 public static String LON = "lon";
 public static String Time = "time";
 public static String TimeGPS = "TimeGPS";
+
+public static String StartTme = "StartTme";
+public static String StartLat = "StartLat";
+public static String StartLon = "StartLon";
+
 private static SharedPreferences sSharedPreferences;
 private static Editor sEditor;
+
+
+
 	
 	public static void  init(Context c){
 		sSharedPreferences = c.getSharedPreferences(c.getPackageName(),Context.MODE_PRIVATE);

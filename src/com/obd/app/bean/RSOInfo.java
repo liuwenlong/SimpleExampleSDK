@@ -79,9 +79,8 @@ public class RSOInfo {
 			vbat = (int)(Float.parseFloat(VBAT)*1000);
 			rmp = (int)(Float.parseFloat(RPM)*4);
 			spd = Integer.parseInt(SPD);
-		}catch (Exception e) {
-			// TODO: handle exception
-		}
+		}catch (Exception e) {}
+		
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("&Q");
 		//buffer.append(String.format("0x050x%02x",ect));
