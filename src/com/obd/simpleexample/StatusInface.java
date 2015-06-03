@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
+import android.os.SystemClock;
 import android.util.Log;
 import com.alibaba.fastjson.JSON;
 import com.obd.app.bean.DROInfo;
@@ -44,19 +45,23 @@ public class StatusInface {
 	}
 
 	public String mSpd = "00";
-	
+	public long curTime = 0;
 	public void RSOinface(JSONObject jsonString){
-		//onStart(false);
-		String ret = jsonString.toString().replace("-", "_");
-		RSOInfo info = JSON.parseObject(ret, RSOInfo.class);
-		
-		String content = String.format("%s%s#", getHead(),info.getQ());
-		DBmanager.getInase().insert(content);
-		
-		content = String.format("%s%s#", getHead(),info.getR());
-		DBmanager.getInase().insert(content);
-		
-		mSpd = info.getSpd();
+		long time = System.currentTimeMillis();
+		if( (time - curTime) >= 30*1000 ){
+			curTime = time;
+			
+			String ret = jsonString.toString().replace("-", "_");
+			RSOInfo info = JSON.parseObject(ret, RSOInfo.class);
+			
+			String content = String.format("%s%s#", getHead(),info.getQ());
+			DBmanager.getInase().insert(content);
+			
+			content = String.format("%s%s#", getHead(),info.getR());
+			DBmanager.getInase().insert(content);
+			
+			mSpd = info.getSpd();
+		}
 	}
 	
 	public void DROinface(JSONObject jsonString){

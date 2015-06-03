@@ -75,11 +75,11 @@ public class DROInfo {
 	public int getMILESM(){
 		int ret = 0;
 		try {
-			float f = Float.parseFloat(MILES);
+			float f = Float.parseFloat(MILE_T);
 			ret = (int) (f*1000);
 		} catch (Exception e) {
 			// TODO: handle exception
-			MyLog.W("累计里程km转换成M失败 MILES="+MILES);
+			MyLog.W("累计里程km转换成M失败 MILE_T="+MILE_T);
 		}
 		return ret;
 	}
@@ -87,11 +87,11 @@ public class DROInfo {
 	public int getFuleSmL(){
 		int ret = 0;
 		try {
-			float f = Float.parseFloat(FUELS);
+			float f = Float.parseFloat(FUEL_T);
 			ret = (int) (f*1000);
 		} catch (Exception e) {
 			// TODO: handle exception
-			MyLog.W("累计油耗L转换成mL失败 FUELS="+FUELS);
+			MyLog.W("累计油耗L转换成mL失败 FUEL_T="+FUEL_T);
 		}
 		return ret;
 	}

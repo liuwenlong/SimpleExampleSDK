@@ -68,7 +68,7 @@ public class DataSyncService extends Service{
 	
 	private void initSingle(){
 		MyPhoneStateListener MyListener   = new MyPhoneStateListener();  
-		TelephonyManager  tel       = ( TelephonyManager )getSystemService(Context.TELEPHONY_SERVICE);  
+		TelephonyManager  tel = ( TelephonyManager )getSystemService(Context.TELEPHONY_SERVICE);  
         tel.listen(MyListener ,PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
         
         mGetLoaction.uploadBattery(0);
@@ -196,8 +196,10 @@ public class DataSyncService extends Service{
 	public String getIMEI(){
 		String imei = QuickShPref.getString(QuickShPref.IEMI);
 		
-		if(imei == null){
+		if(imei == null || imei.length() == 0){
 			imei =((TelephonyManager) getSystemService(TELEPHONY_SERVICE)).getDeviceId();
+			if(imei == null)
+				imei = "";
 			Log.d("ieme", imei);
 			QuickShPref.putValueObject(QuickShPref.IEMI, imei);
 			mGetLoaction.mIMEI = imei;

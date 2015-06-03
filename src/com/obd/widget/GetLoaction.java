@@ -128,7 +128,7 @@ public class GetLoaction {
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}			
+			}
 		}else{
 			DROInfo mDROInfo = StatusInface.getInstance().getDROInfo();
 			if(mDROInfo != null){
