@@ -14,6 +14,7 @@ import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
+import com.baidu.location.LocationClientOption.LocationMode;
 import com.comobd.zyobd.api.OBDAPI;
 import com.obd.app.bean.JsonMsg;
 import com.obd.observer.BObserver;
@@ -104,7 +105,7 @@ public class DataSyncService extends Service{
 		mLocClient = new LocationClient(this);
 		mLocClient.registerLocationListener(myListener);
 		LocationClientOption option = new LocationClientOption();
-		option.setOpenGps(true);// 打开gps
+		option.setLocationMode(LocationMode.Hight_Accuracy);//设置定位模式//option.setOpenGps(true);// 打开gps
 		option.setCoorType("bd09ll"); // 设置坐标类型
 		option.setScanSpan(30*1000);
 		mLocClient.setLocOption(option);

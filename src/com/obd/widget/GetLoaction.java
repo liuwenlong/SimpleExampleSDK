@@ -35,7 +35,7 @@ public class GetLoaction {
 	public String uploadPos(BDLocation location) {
 		
 		String time = location.getTime();
-		time = formatTime(time);
+		if(time!=null) time = formatTime(time);
 		if(time == null || time.length()<19){
 			if(time!=null)
 				Log.d("tag", "定位数据有误,不上报:"+time);
