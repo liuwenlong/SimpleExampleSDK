@@ -127,7 +127,6 @@ public class DataSyncService extends Service{
 			if (location == null)	{Log.e(TAG,"百度定位失败"); return;}
 			Log.d(TAG,"百度定位成功:"+location.getLongitude()+","+location.getLatitude());
 			mGetLoaction.uploadPos(location);
-			saveLastPos(location);
 
 		}
 		public void onReceivePoi(BDLocation poiLocation) {}
@@ -136,9 +135,19 @@ public class DataSyncService extends Service{
 	public void saveLastPos(BDLocation location){
 		QuickShPref.putValueObject(QuickShPref.LAT, (float)(location.getLatitude()));
 		QuickShPref.putValueObject(QuickShPref.LON, (float)(location.getLongitude()));
-		StatusInface.getInstance().getTime();
+		QuickShPref.putValueObject(QuickShPref.TimeLastLoc, location.getTime());
+		
 		MyLog.D("百度定位地址保存成功");
 	}
+	public BDLocation getLastPos(BDLocation location){
+		if(location!=null){
+			location.setLatitude(QuickShPref.getFloat(QuickShPref.LAT));
+			location.setLongitude(QuickShPref.getFloat(QuickShPref.LON));
+			location.setTime(QuickShPref.getString(QuickShPref.TimeLastLoc));
+		}
+		return location;
+	}
+	
 	public static void openADB(){
 		new Thread(){
 			@Override
@@ -246,4 +255,21 @@ public class DataSyncService extends Service{
 		EventBus.getDefault().post(msg);
 	}
 	
+	private BDLocation getBDLocation(BDLocation loc){
+		if(loc!=null){
+			String time = loc.getTime();
+			String lastLocTime = QuickShPref.getString(QuickShPref.TimeLastLoc);
+			if(time == null){
+				return getLastPos(loc);
+			}else{
+				time = mGetLoaction.formatTime(time);
+				
+				if(time.compareTo(lastLocTime)>0){
+					
+				}
+			}
+			
+		}
+		return null;
+	}
 }

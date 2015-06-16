@@ -35,7 +35,9 @@ public class GetLoaction {
 	public String uploadPos(BDLocation location) {
 		
 		String time = location.getTime();
+		
 		if(time!=null) time = formatTime(time);
+		
 		if(time == null || time.length()<19){
 			if(time!=null)
 				Log.d("tag", "定位数据有误,不上报:"+time);
@@ -178,7 +180,7 @@ public class GetLoaction {
 	/*
 	 * 将百度定位的时间转换成标准格式2013-09-01 09:05:02
 	 */
-	private String formatTime(String time){
+	public String formatTime(String time){
 			Pattern pattern = Pattern.compile("\\s*(\\d+)-(\\d+)-(\\d+)\\s+(\\d+):(\\d+):(\\d+)\\s*");
 			Matcher matcher = pattern.matcher(time);
 			String ret = null;

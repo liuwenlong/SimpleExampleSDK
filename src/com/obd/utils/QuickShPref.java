@@ -22,6 +22,7 @@ public static String Msg_Vibrate= "Msg_Vibrate";
 public static String IsStartOn = "IsStartOn";
 public static String LAT = "lat";
 public static String LON = "lon";
+public static String TimeLastLoc = "TimeLastLoc";
 public static String Time = "time";
 public static String TimeGPS = "TimeGPS";
 
