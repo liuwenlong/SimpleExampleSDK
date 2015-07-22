@@ -41,10 +41,12 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 
 public class DataSyncService extends Service{
+	public final static int RefreshTime = 30*1000;
 	
 	private static String TAG = "DataSyncService";
 	private GetLoaction mGetLoaction = new GetLoaction();
 	NetWork mNetWork = new NetWork();
+	
 	
     public class LocalBinder extends Binder {
         public DataSyncService getService() {
@@ -63,7 +65,7 @@ public class DataSyncService extends Service{
 		openADB();
 		getIMEI();
 		initSingle();
-		
+		startUploadPos();
 		mNetWork.start();
 	}
 	
@@ -107,27 +109,26 @@ public class DataSyncService extends Service{
 		LocationClientOption option = new LocationClientOption();
 		option.setLocationMode(LocationMode.Hight_Accuracy);//设置定位模式//option.setOpenGps(true);// 打开gps
 		option.setCoorType("bd09ll"); // 设置坐标类型
-		option.setScanSpan(30*1000);
+		option.setScanSpan(RefreshTime);
 		mLocClient.setLocOption(option);
 		
 		mHandler.postDelayed(new Runnable() {
-			
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
 				mLocClient.start(); 
 			}
-		}, 0*1000);
+		}, 10*1000);
 		
 		Log.d(TAG,"百度定位 初始化成功");
     }
 	public class MyLocationListenner implements BDLocationListener {
 		@Override
 		public void onReceiveLocation(BDLocation location) {
+			location = getBDLocation(location);
 			if (location == null)	{Log.e(TAG,"百度定位失败"); return;}
 			Log.d(TAG,"百度定位成功:"+location.getLongitude()+","+location.getLatitude());
-			mGetLoaction.uploadPos(location);
-
+			//mGetLoaction.uploadPos(location);
 		}
 		public void onReceivePoi(BDLocation poiLocation) {}
 	}
@@ -140,11 +141,16 @@ public class DataSyncService extends Service{
 		MyLog.D("百度定位地址保存成功");
 	}
 	public BDLocation getLastPos(BDLocation location){
-		if(location!=null){
-			location.setLatitude(QuickShPref.getFloat(QuickShPref.LAT));
-			location.setLongitude(QuickShPref.getFloat(QuickShPref.LON));
-			location.setTime(QuickShPref.getString(QuickShPref.TimeLastLoc));
+		if(location==null){
+			if(QuickShPref.getString(QuickShPref.TimeLastLoc)==null){
+				return null;
+			}
+			location = new BDLocation();
 		}
+		location.setLatitude(QuickShPref.getFloat(QuickShPref.LAT));
+		location.setLongitude(QuickShPref.getFloat(QuickShPref.LON));
+		location.setTime(QuickShPref.getString(QuickShPref.TimeLastLoc));
+		MyLog.D("获取最后的有效地址");
 		return location;
 	}
 	
@@ -193,7 +199,6 @@ public class DataSyncService extends Service{
 		Log.d(TAG, "initOBD");
 		sv = new StatusVehicle();
 		
-		
 		OBDAPI obdapi = OBDAPI.getInstance(this.getApplicationContext(),sv);
 		RSObserver rsObserver = new RSObserver(obdapi);
 //		BObserver bObserver = new BObserver(obdapi);
@@ -205,22 +210,19 @@ public class DataSyncService extends Service{
 	
 	public String getIMEI(){
 		String imei = QuickShPref.getString(QuickShPref.IEMI);
-		
 		if(imei == null || imei.length() == 0){
-			imei =((TelephonyManager) getSystemService(TELEPHONY_SERVICE)).getDeviceId();
+			imei = ((TelephonyManager) getSystemService(TELEPHONY_SERVICE)).getDeviceId();
 			if(imei == null)
 				imei = "";
 			Log.d("ieme", imei);
 			QuickShPref.putValueObject(QuickShPref.IEMI, imei);
 			mGetLoaction.mIMEI = imei;
 			StatusInface.getInstance().mIEMI = imei;
-			
 		}
-
 		return imei;
 	}
 	
-	private class MyPhoneStateListener extends PhoneStateListener{  
+	private class MyPhoneStateListener extends PhoneStateListener{
       /* Get the Signal strength from the provider, each tiome there is an update  从得到的信号强度,每个tiome供应商有更新*/  
       @Override
       public void onSignalStrengthsChanged(SignalStrength signalStrength){
@@ -230,20 +232,31 @@ public class DataSyncService extends Service{
       }
 	}
 	
+	private void startUploadPos(){
+		mHandler.postDelayed(mUploadRun, RefreshTime/3);
+	}
+	public Runnable mUploadRun = new Runnable(){
+		public void run() {
+			mGetLoaction.uploadPos(getLastPos(null));
+			mNetWork.interruptMain();
+			mHandler.postDelayed(this, RefreshTime);
+		}
+	};
+	
 	public void onEventMainThread(String result) {
 		MyLog.D("onEventMainThread String ret="+result);
 		StatusInface.getInstance().vehicleResult(result);
 	}
 	public void onEventMainThread(JsonMsg msg) {
 		switch (msg.what) {
-		case 2:
-			StatusInface.getInstance().DROinface(msg.obj);
-			break;
-		case 1:
-			StatusInface.getInstance().RSOinface(msg.obj);
-			break;
-		default:
-			break;
+			case 2:
+				StatusInface.getInstance().DROinface(msg.obj);
+				break;
+			case 1:
+				StatusInface.getInstance().RSOinface(msg.obj);
+				break;
+			default:
+				break;
 		}
 		
 	}
@@ -259,17 +272,21 @@ public class DataSyncService extends Service{
 		if(loc!=null){
 			String time = loc.getTime();
 			String lastLocTime = QuickShPref.getString(QuickShPref.TimeLastLoc);
-			if(time == null){
+			MyLog.D("lastLocTime="+lastLocTime+",time="+time+".");
+			if(time == null || loc.getLatitude() == Double.MIN_VALUE){
 				return getLastPos(loc);
 			}else{
+				if(lastLocTime!=null)
+					MyLog.D("compareTo="+time.compareTo(lastLocTime));
 				time = mGetLoaction.formatTime(time);
-				
-				if(time.compareTo(lastLocTime)>0){
-					
+				if(lastLocTime==null || (time!=null&&time.compareTo(lastLocTime)>0)){
+					loc.setTime(time);
+					saveLastPos(loc);
 				}
 			}
-			
+		}else{
+			return getLastPos(loc);
 		}
-		return null;
+		return loc;
 	}
 }

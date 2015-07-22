@@ -17,22 +17,27 @@ public class NetWork {
 	private InputStream mSocketReader;
 	private OutputStream mSocketWriter;
 	private DBmanager mDBmanager;
-	
+	private Thread mMainThread;
 	public NetWork(){
 		mDBmanager = DBmanager.getInase();
 	}
 	
+	public void interruptMain(){
+		if(mMainThread!=null){
+			mMainThread.interrupt();
+		}
+	}
+	
 	public void start(){
-		new Thread(){
-
+		mMainThread = new Thread(){
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
 				super.run();
 				mainRun();
 			}
-			
-		}.start();
+		};
+		mMainThread.start();
 	}
 	
 	public void mainRun(){

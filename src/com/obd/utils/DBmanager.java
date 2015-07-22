@@ -86,6 +86,8 @@ public class DBmanager {
     		item.content = cursor.getString(cursor.getColumnIndex(COLUM_CONTENT)); 
     		item.id = cursor.getInt(cursor.getColumnIndex(COLUM_ID)); 
     	}
+    	if(cursor!=null)
+    		cursor.close();
         return item;
     }
     

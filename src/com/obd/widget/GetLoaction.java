@@ -33,21 +33,25 @@ public class GetLoaction {
 	}
 	
 	public String uploadPos(BDLocation location) {
+		if(location == null || location.getTime() == null){
+			MyLog.E("定位数据为空,不上报");
+			return null;
+		}
 		
 		String time = location.getTime();
 		
-		if(time!=null) time = formatTime(time);
+//		if(time!=null) time = formatTime(time);
 		
 		if(time == null || time.length()<19){
-			if(time!=null)
-				Log.d("tag", "定位数据有误,不上报:"+time);
+			MyLog.E("定位数据有误,不上报:time="+time);
 			return null;
 		}
 		double lon = location.getLongitude();
 		double lat =	location.getLatitude();//gps.mLat; // 纬度
 		
 		// 如果经纬度为0，则不上报
-		if (lon == 0 || lat == 0) {
+		if (lon == Double.MIN_VALUE || lat == Double.MIN_VALUE) {
+			MyLog.E("定位数据有误,不上报:"+time);
 			return null;
 		}
 		
@@ -125,12 +129,6 @@ public class GetLoaction {
 			QuickShPref.putValueObject(QuickShPref.StartTme, StatusInface.getInstance().getTime());
 			QuickShPref.putValueObject(QuickShPref.StartLat, latStartString);
 			QuickShPref.putValueObject(QuickShPref.StartLon, lonStartString);
-			try {
-				Runtime.getRuntime().exec("sync");
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		}else{
 			DROInfo mDROInfo = StatusInface.getInstance().getDROInfo();
 			if(mDROInfo != null){
@@ -138,11 +136,14 @@ public class GetLoaction {
 				String startLat = QuickShPref.getString(QuickShPref.StartLat);
 				String startTime = QuickShPref.getString(QuickShPref.StartTme);
 				
-				if(startTime != null || startLat != null || startLon != null){
+				if(strNotEmpty(startTime) && strNotEmpty(startLat) && strNotEmpty(startLon)){
 					buffer.append(String.format("&S2,%s,%sE,%sN,%d,%d,5,%s,%s,%s,%s,0", startTime,
 							startLon,startLat,mDROInfo.getMILESM(),mDROInfo.getFuleSmL(),
 							mDROInfo.RACLS,mDROInfo.BRAKES,mDROInfo.STARTS,mDROInfo.STARTS));
 					DBmanager.getInase().insertBackupNote(buffer.toString(),mDROInfo.note); 
+					QuickShPref.putValueObject(QuickShPref.StartTme, "");
+					QuickShPref.putValueObject(QuickShPref.StartLat, "");
+					QuickShPref.putValueObject(QuickShPref.StartLon, "");					
 				}else{
 					MyLog.E("startTime="+startTime+",startLat="+startLat+",startLon="+startLon);
 				}
@@ -156,9 +157,26 @@ public class GetLoaction {
 		buffer.append('#');
 		
 		mDBmanager.insert(buffer.toString());
+		
+		sync();
+		
 		return buffer.toString();
 	}
-	
+	public boolean strNotEmpty(String str){
+		if(str !=null && str.length()>0){
+			return true;
+		}else{
+			return false;
+		}
+	}
+	public void sync(){
+		try {
+			Runtime.getRuntime().exec("sync");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	public String genHead(){
 		return "*MG200" + mIMEI + ",BA%s#";
 	}
@@ -206,7 +224,7 @@ public class GetLoaction {
 					return null;
 				}
 				ret = String.format("%04d-%02d-%02d %02d:%02d:%02d", y,m,d,h,min,s);
-				Log.d("time", ret);
+				//Log.d("time", ret);
 			}
 			return ret;
 	}

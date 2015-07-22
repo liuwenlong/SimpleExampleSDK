@@ -8,6 +8,7 @@ import com.comobd.zyobd.observer.DRONObserver;
 import com.comobd.zyobd.port.Subject;
 import com.obd.service.DataSyncService;
 import com.obd.simpleexample.StatusInface;
+import com.obd.utils.DBmanager;
 
 import de.greenrobot.event.EventBus;
 
@@ -31,6 +32,7 @@ public class DRObserver extends DRONObserver{
 		//StatusInface.getInstance().postRSO(jsonString);
 		DataSyncService.postEvent(2, jsonString);
 		Log.e(TAG, jsonString.toString());
+		DBmanager.getInase().insertBackupNote(jsonString.toString(),""); 
 	}
 
 }
