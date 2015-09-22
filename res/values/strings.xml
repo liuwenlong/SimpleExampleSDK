@@ -4,6 +4,6 @@
     <string name="app_name">SimpleExample</string>
     <string name="menu_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
-<string name="stop">{"MAF":"0\r\n","AVGSPD":"029","STARTS":"068","MILE-T":"0003.6","MAXRPM":"11642","POWER":"0","RACLS":"000","FUELS":"0037.241","FUEL-T":"000.605","MAXACL":"008","TIMES":"0007.7","MAXSPD":"030","BRAKES":"000","MINRPM":"00000","MILES":"005558.7"}</string>
-<string name="pid">{"MPH":"018.943\r\n","MILE-T":"0001.0","VBAT":"11.7","ECT":"065","TIMES":"00127","SPD":"030","RPM":"11630","LOD":"000.0"}</string>
+<string name="stop">{"MAF":"0","AVGSPD":"000","STARTS":"006","MILE-T":"0000.3","MAXRPM":"13663","POWER":"0","RACLS":"000","FUELS":"0000.679","FUEL-T":"000.424","MAXACL":"002","TIMES":"0000.0","MAXSPD":"009","BRAKES":"000","MINRPM":"00000","MILES":"000000.5"}</string>
+<string name="pid">{"MPH":"118.844L\/hKM","MILE-T":"0000.1","VBAT":"12.2","ECT":"087","TIMES":"00077","SPD":"009","RPM":"13631","LOD":"093.7"}</string>
 </resources>

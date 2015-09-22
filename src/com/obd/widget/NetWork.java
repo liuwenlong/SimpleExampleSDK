@@ -133,7 +133,7 @@ public class NetWork {
 			Thread.sleep(dur);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		
 	}

@@ -81,7 +81,7 @@ public class StatusInface {
     	if(date.getYear()<113){
     		String time = QuickShPref.getString(QuickShPref.Time);
     		if(time == null)
-    			time = "20150330101010";
+    			time = null;
     		return time;
     	}
     	SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");

@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import android.util.Log;
 import com.baidu.location.BDLocation;
 import com.obd.app.bean.DROInfo;
+import com.obd.service.DataSyncService;
 import com.obd.simpleexample.StatusInface;
 import com.obd.utils.DBmanager;
 import com.obd.utils.MyLog;
@@ -36,6 +37,10 @@ public class GetLoaction {
 		if(location == null || location.getTime() == null){
 			MyLog.E("定位数据为空,不上报");
 			return null;
+		}
+		Date temDate = new Date();
+		if(temDate == null || temDate.getYear() < 113){
+			MyLog.E("当前系统时间无效,不上报");
 		}
 		
 		String time = location.getTime();
@@ -74,7 +79,13 @@ public class GetLoaction {
 			f = 0x0F; // 基站 15
 		}
 
-
+		if(DataSyncService.USE_GPS_LOCATION){
+			Gps gps84 = PositionUtil.gcj_To_Gps84(lat, lon);
+			lat = gps84.mLat;
+			lon = gps84.mLon;
+		}else{
+			f = 0x6f;
+		}
 
 
 		int lonDu = (int) lon;
@@ -111,7 +122,7 @@ public class GetLoaction {
 		buffer.append(time.subSequence(17, 19));
 		buffer.append(latString);
 		buffer.append(lonString);
-		buffer.append((char) 0x6f);
+		buffer.append((char)f);
 		buffer.append(speed);
 		buffer.append(direction);
 		buffer.append(time.subSequence(8, 10));

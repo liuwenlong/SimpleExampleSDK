@@ -42,7 +42,7 @@ import android.util.Log;
 
 public class DataSyncService extends Service{
 	public final static int RefreshTime = 30*1000;
-	
+	public static final boolean USE_GPS_LOCATION = true;
 	private static String TAG = "DataSyncService";
 	private GetLoaction mGetLoaction = new GetLoaction();
 	NetWork mNetWork = new NetWork();
@@ -73,8 +73,6 @@ public class DataSyncService extends Service{
 		MyPhoneStateListener MyListener   = new MyPhoneStateListener();  
 		TelephonyManager  tel = ( TelephonyManager )getSystemService(Context.TELEPHONY_SERVICE);  
         tel.listen(MyListener ,PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
-        
-        mGetLoaction.uploadBattery(0);
 	}
 
     @Override
@@ -108,7 +106,13 @@ public class DataSyncService extends Service{
 		mLocClient.registerLocationListener(myListener);
 		LocationClientOption option = new LocationClientOption();
 		option.setLocationMode(LocationMode.Hight_Accuracy);//设置定位模式//option.setOpenGps(true);// 打开gps
-		option.setCoorType("bd09ll"); // 设置坐标类型
+		
+		option.setLocationMode(LocationMode.Hight_Accuracy);
+		if(USE_GPS_LOCATION)
+			option.setCoorType("gcj02"); // 设置坐标类型
+		else
+			option.setCoorType("bd09ll"); // 设置坐标类型
+		
 		option.setScanSpan(RefreshTime);
 		mLocClient.setLocOption(option);
 		
@@ -212,13 +216,11 @@ public class DataSyncService extends Service{
 		String imei = QuickShPref.getString(QuickShPref.IEMI);
 		if(imei == null || imei.length() == 0){
 			imei = ((TelephonyManager) getSystemService(TELEPHONY_SERVICE)).getDeviceId();
-			if(imei == null)
-				imei = "";
-			Log.d("ieme", imei);
+			Log.d("imei=", imei);
 			QuickShPref.putValueObject(QuickShPref.IEMI, imei);
-			mGetLoaction.mIMEI = imei;
-			StatusInface.getInstance().mIEMI = imei;
 		}
+		mGetLoaction.mIMEI = imei;
+		StatusInface.getInstance().mIEMI = imei;
 		return imei;
 	}
 	
@@ -279,7 +281,7 @@ public class DataSyncService extends Service{
 				if(lastLocTime!=null)
 					MyLog.D("compareTo="+time.compareTo(lastLocTime));
 				time = mGetLoaction.formatTime(time);
-				if(lastLocTime==null || (time!=null&&time.compareTo(lastLocTime)>0)){
+				if(lastLocTime==null || (time!=null && time.compareTo(lastLocTime)>0)){
 					loc.setTime(time);
 					saveLastPos(loc);
 				}
