@@ -279,7 +279,7 @@ public class DataSyncService extends Service{
 				return getLastPos(loc);
 			}else{
 				time = mGetLoaction.formatTime(time);
-				if(lastLocTime!=null)
+				if(lastLocTime!=null && time != null)
 					MyLog.D("compareTo="+time.compareTo(lastLocTime));
 				if(lastLocTime==null || (time!=null && time.compareTo(lastLocTime)>0)){
 					loc.setTime(time);
