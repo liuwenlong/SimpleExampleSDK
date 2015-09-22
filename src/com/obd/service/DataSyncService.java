@@ -278,9 +278,9 @@ public class DataSyncService extends Service{
 			if(time == null || loc.getLatitude() == Double.MIN_VALUE){
 				return getLastPos(loc);
 			}else{
+				time = mGetLoaction.formatTime(time);
 				if(lastLocTime!=null)
 					MyLog.D("compareTo="+time.compareTo(lastLocTime));
-				time = mGetLoaction.formatTime(time);
 				if(lastLocTime==null || (time!=null && time.compareTo(lastLocTime)>0)){
 					loc.setTime(time);
 					saveLastPos(loc);
