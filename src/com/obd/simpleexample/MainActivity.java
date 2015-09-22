@@ -37,6 +37,7 @@ public class MainActivity extends Activity {
 		switch (v.getId()) {
 		case R.id.start:
 			EventBus.getDefault().post("IGNITION");
+			startPid();
 			break;
 		case R.id.stop:
 			JsonMsg msg = new JsonMsg();
@@ -52,11 +53,38 @@ public class MainActivity extends Activity {
 			}
 			
 			EventBus.getDefault().post(msg);
+			stopPid();
 			break;
 		default:
 			break;
 		}
 	}
+
+	private void startPid(){
+		mHandler.postDelayed(mPidPostRunnale, 30*1000);
+	}
+	private void stopPid(){
+		mHandler.removeCallbacks(mPidPostRunnale);
+	}
+	Runnable mPidPostRunnale = new Runnable(){
+		@Override
+		public void run() {
+			JsonMsg msg = new JsonMsg();
+			msg.what = 1;
+			String json = getString(R.string.pid);
+			MyLog.D( json);
+			
+			try {
+				msg.obj = new JSONObject(json);
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			EventBus.getDefault().post(msg);	
+			mHandler.postDelayed(mPidPostRunnale, 30*1000);
+		}
+	};
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
