@@ -62,7 +62,7 @@ public class DataSyncService extends Service{
 		 StatusInface.init(this);
 		 initOBD();
 		 locationInit();
-		openADB();
+		//openADB();
 		getIMEI();
 		initSingle();
 		startUploadPos();

@@ -48,7 +48,7 @@ public class StatusInface {
 	public long curTime = 0;
 	public void RSOinface(JSONObject jsonString){
 		long time = System.currentTimeMillis();
-		if( (time - curTime) >= 30*1000 ){
+		if( (time - curTime) >= 60*1000 ){
 			curTime = time;
 			
 			String ret = jsonString.toString().replace("-", "_");
@@ -101,6 +101,14 @@ public class StatusInface {
     		
     		doOnstart();
     	}
+    }
+    
+    public boolean hasEvent(){
+    	boolean ret = false;
+    	if(startS1!=null || mDROInfo!=null){
+    		ret = true;
+    	}
+    	return ret;
     }
     
     public String startS1 = null; 

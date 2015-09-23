@@ -20,7 +20,7 @@ import com.obd.utils.QuickShPref;
 
 
 public class GetLoaction {
-	public static final boolean isDebug = false;
+	public static final boolean isDebug = true;
 	
 	public String mIMEI = "33333333333";
 	int mGSMsingle;
@@ -41,16 +41,21 @@ public class GetLoaction {
 		Date temDate = new Date();
 		if(temDate == null || temDate.getYear() < 113){
 			MyLog.E("当前系统时间无效,不上报");
+			return null;
 		}
 		
 		String time = location.getTime();
 		
-//		if(time!=null) time = formatTime(time);
+		if(StatusInface.getInstance().hasEvent()){
+			time = getTime();
+		}
 		
 		if(time == null || time.length()<19){
 			MyLog.E("定位数据有误,不上报:time="+time);
 			return null;
 		}
+		
+		
 		double lon = location.getLongitude();
 		double lat =	location.getLatitude();//gps.mLat; // 纬度
 		
