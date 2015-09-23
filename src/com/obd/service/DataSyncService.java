@@ -216,7 +216,7 @@ public class DataSyncService extends Service{
 		String imei = QuickShPref.getString(QuickShPref.IEMI);
 		if(imei == null || imei.length() == 0){
 			imei = ((TelephonyManager) getSystemService(TELEPHONY_SERVICE)).getDeviceId();
-			Log.d("imei=", imei);
+			Log.d(TAG,"imei="+imei);
 			QuickShPref.putValueObject(QuickShPref.IEMI, imei);
 		}
 		mGetLoaction.mIMEI = imei;
