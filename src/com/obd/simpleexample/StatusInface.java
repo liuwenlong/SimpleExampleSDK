@@ -47,6 +47,8 @@ public class StatusInface {
 	public String mSpd = "00";
 	public long curTime = 0;
 	public void RSOinface(JSONObject jsonString){
+		if(GetLoaction.GetLoactionHead == null)
+			return;
 		long time = System.currentTimeMillis();
 		if( (time - curTime) >= 60*1000 ){
 			curTime = time;
